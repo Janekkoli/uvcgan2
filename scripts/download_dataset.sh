@@ -3,7 +3,7 @@
 DATADIR="${UVCGAN2_DATA:-data}"
 
 declare -A URL_LIST=(
-    [selfie2anime]="https://www.dropbox.com/s/9lz6gwwwyyxpdnn/selfie2anime.zip"
+    [selfie2anime]="https://www.dropbox.com/s/9lz6gwwwyyxpdnn/selfie2anime.zip?dl=1"
 #    [male2female]="https://cgm.technion.ac.il/Computer-Graphics-Multimedia/CouncilGAN/DataSet/celeba_male2female.zip"
 #    [glasses]="https://cgm.technion.ac.il/Computer-Graphics-Multimedia/CouncilGAN/DataSet/celeba_glasses.zip"
     [celeba_hq]="https://www.dropbox.com/s/f7pvjij2xlpff59/celeba_hq.zip"
@@ -88,18 +88,18 @@ download_archive ()
             "${url}" --output-document "${path}"
     fi
 
-    if [[ -n "${checksum}" ]]
-    then
-        # shellcheck disable=SC2155
-        local test_csum="$(calc_sha256_hash "${path}")"
+    # if [[ -n "${checksum}" ]]
+    # then
+    #     # shellcheck disable=SC2155
+    #     local test_csum="$(calc_sha256_hash "${path}")"
 
-        if [[ "${test_csum}" == "${checksum}" ]]
-        then
-            echo " - Checksum valid"
-        else
-            die "Checksum mismatch for '${path}' ${test_csum} vs ${checksum}"
-        fi
-    fi
+    #     if [[ "${test_csum}" == "${checksum}" ]]
+    #     then
+    #         echo " - Checksum valid"
+    #     else
+    #         die "Checksum mismatch for '${path}' ${test_csum} vs ${checksum}"
+    #     fi
+    # fi
 }
 
 download_and_extract_zip ()

@@ -1,0 +1,3 @@
+tmux attach -t train
+
+

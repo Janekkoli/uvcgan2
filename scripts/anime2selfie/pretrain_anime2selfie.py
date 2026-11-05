@@ -44,7 +44,7 @@ args_dict = {
         'merge_type' : 'unpaired',
         'workers'    : 1,
     },
-    'epochs'        : 2500,
+    'epochs'        : 500,
     'discriminator' : None,
     'generator' : {
         **GEN_PRESETS[cmdargs.gen],
