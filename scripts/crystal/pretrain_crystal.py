@@ -22,7 +22,7 @@ args_dict = {
                 'dataset' : {
                     'name'   : 'image-domain-hierarchy',
                     'domain' : domain,
-                    'path'   : 'crystalSmall',
+                    'path'   : 'CrystalSmallBack',
                 },
                 'shape'           : (3, 64, 64),
                 'transform_train' : [
@@ -72,11 +72,20 @@ args_dict = {
         'T_mult'  : 1,
         'eta_min' : cmdargs.batch_size * 5e-8 / 512,
     },
+    'transfer': {
+    'base_model': 'crystalSmall/Model100epokBertnobackgrounds',
+    'transfer_map': {
+        'encoder': 'encoder',
+    },
+    'strict': True,
+    'allow_partial': False,
+    'fuzzy': None,
+    },
     'loss'             : 'l1',
     'gradient_penalty' : None,
     'steps_per_epoch'  : 32 * 1024 // cmdargs.batch_size,
 # args
-    'label'      : 'traning500epok',
+    'label'      : 'PretrainedNowWithBackgrounds',
     'outdir'     : os.path.join(ROOT_OUTDIR, 'crystalSmall'),
     'log_level'  : 'DEBUG',
     'checkpoint' : 15,
