@@ -1,0 +1,25 @@
+#!/bin/bash
+#SBATCH --job-name=uvcgan_pretrain
+#SBATCH --output=logs/job_%j.out
+#SBATCH --error=logs/job_%j.err
+#SBATCH --partition=gpu            # Specify GPU partition/queue
+#SBATCH --account=g107-2933         # Replace GRANT_ID with your ICM grant number (e.g., g90-12)
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16GB
+#SBATCH --gres=gpu:1               # Request 1 GPU
+#SBATCH --time=03:30:00            # Walltime limit (HH:MM:SS)
+
+# Create logs directory for job stdout/stderr
+mkdir -p logs
+
+# Navigate to working directory
+cd /lu/tetyda/home/jk426853/uvcgan2
+# Activate virtual environment
+source /lu/tetyda/home/jk426853/miniforge3/bin/activate uvcgan2
+
+
+# Execute training script
+python scripts/crystal/pretrain_crystal.py --batch-size 40
+

@@ -22,9 +22,9 @@ args_dict = {
                 'dataset' : {
                     'name'   : 'image-domain-hierarchy',
                     'domain' : domain,
-                    'path'   : 'CrystalSmallBack',
+                    'path'   : 'crystal160withBackgrounds',
                 },
-                'shape'           : (3, 64, 64),
+                'shape'           : (3, 160, 160),
                 'transform_train' : [
                     { 'name' : 'random-rotation', 'degrees' : 10,  },
                     'random-flip-horizontal',
@@ -73,7 +73,7 @@ args_dict = {
         'eta_min' : cmdargs.batch_size * 5e-8 / 512,
     },
     'transfer': {
-    'base_model': 'crystalSmall/Model100epokBertnobackgrounds',
+    'base_model': 'crystalSmall/model_m(autoencoder)_d(None)_g(vit-modnet)_Pretrainednoback',
     'transfer_map': {
         'encoder': 'encoder',
     },
@@ -85,7 +85,7 @@ args_dict = {
     'gradient_penalty' : None,
     'steps_per_epoch'  : 32 * 1024 // cmdargs.batch_size,
 # args
-    'label'      : 'PretrainedNowWithBackgrounds',
+    'label'      : 'PretrainedwithBackgrounds',
     'outdir'     : os.path.join(ROOT_OUTDIR, 'crystalSmall'),
     'log_level'  : 'DEBUG',
     'checkpoint' : 15,

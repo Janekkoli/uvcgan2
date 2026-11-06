@@ -50,7 +50,7 @@ def get_transfer_preset(cmdargs):
 
     base_model = (
     'crystalSmall/'
-    'model_m(autoencoder)_d(None)_g(vit-modnet)_traning500epok'
+    'model_m(autoencoder)_d(None)_g(vit-modnet)_PretrainedwithBackgrounds'
 )
     return {
         'base_model' : base_model,
@@ -72,9 +72,9 @@ args_dict = {
                 'dataset' : {
                     'name'   : 'image-domain-hierarchy',
                     'domain' : domain,
-                    'path'   : 'crystalSmall',
+                    'path'   : 'crystal160withBackgrounds',
                 },
-                'shape'           : (3, 64, 64),
+                'shape'           : (3, 160, 160),
                 'transform_train' : [
                     { 'name' : 'random-rotation', 'degrees' : 10, },
                     'random-flip-horizontal',
@@ -144,7 +144,7 @@ args_dict = {
     ),
     'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall'),
     'log_level'  : 'DEBUG',
-    'checkpoint' : 15,
+    'checkpoint' : 10,
 }
 
 train(args_dict)

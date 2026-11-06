@@ -1,7 +1,7 @@
 import argparse
 import os
 import tqdm
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 def downscale(image, out_shape, interpolation):
     if interpolation == 'bilinear':
@@ -80,9 +80,12 @@ def downscale_images(source, images, target, shape, interpolation):
         root_dst = os.path.join(target, subdir)
         path_dst = os.path.join(root_dst, fname)
 
-        os.makedirs(root_dst, exist_ok = True)
+        try:
+            image_src = load_image(path_src)
+        except UnidentifiedImageError:
+            continue
 
-        image_src = load_image(path_src)
+        os.makedirs(root_dst, exist_ok = True)
         image_dst = downscale(image_src, shape, interpolation)
 
         save_image(image_dst, path_dst)
@@ -98,4 +101,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
