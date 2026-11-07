@@ -141,11 +141,21 @@ def transfer_state_dict(module, state_dict, fuzzy, strict):
         raise ValueError(f"Unknown fuzzy transfer type: {fuzzy}")
 
 def transfer_parameters(model, base_model, transfer_config):
+    transferred = []
+
     for (dst, src) in transfer_config.transfer_map.items():
         transfer_state_dict(
             model.models[dst], base_model.models[src].state_dict(),
             transfer_config.fuzzy, transfer_config.strict
         )
+        transferred.append(dst)
+
+    for dst in transferred:
+        avg_name = f'avg_{dst}'
+        if avg_name in model.models:
+            model.models[avg_name].load_state_dict(
+                model.models[dst].state_dict()
+            )
 
 def transfer(model, transfer_config):
     if transfer_config is None:
@@ -162,5 +172,4 @@ def transfer(model, transfer_config):
 
     base_model = get_base_model(transfer_config, model.device)
     transfer_parameters(model, base_model, transfer_config)
-
 

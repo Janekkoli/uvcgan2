@@ -12,7 +12,9 @@ class TransferConfig(ConfigBase):
         Mapping between networks names of the current model and the model to
         transfer parameters from. For example, mapping of the form
         `{ 'gen_ab' : 'gen' }` will initialize generator `gen_ab` of the
-        current model from the `gen` generator of the base model.
+        current model from the `gen` generator of the base model. If the
+        current model has an EMA network named `avg_gen_ab`, it is initialized
+        from the transferred generator weights as well.
         Default: None.
     strict : bool
         Value of the pytorch's strict parameter when loading parameters.
@@ -50,4 +52,3 @@ class TransferConfig(ConfigBase):
         self.strict        = strict
         self.allow_partial = allow_partial
         self.fuzzy         = fuzzy
-

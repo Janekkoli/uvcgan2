@@ -4,7 +4,7 @@ tmux attach -t train
 # Ewaluacja
 python3 scripts/translate_images.py outdir/crystalSmall/model100epochs --split val
 
-/lu/tetyda/home/jk426853/miniforge3/envs/uvcgan2/bin/python scripts/translate_images.py /lu/tetyda/home/jk426853/uvcgan2/outdir/crystalSmall/model_m(autoencoder)_d(None)_g(vit-modnet)_PretrainedwithBackgrounds --split val
+/lu/tetyda/home/jk426853/miniforge3/envs/uvcgan2/bin/python scripts/translate_images.py /lu/tetyda/home/jk426853/uvcgan2/outdir/crystalSmall/crystalSmall_chatFix/model5 --split val
 # Downsize
 python3 ./scripts/downsize_right.py -s 64 64 -i lanczos /home/jan/uvcgan2/uvcgan2/data/573_files /home/jan/uvcgan2/uvcgan2/data/backgroundSmall
 # Pretrain
@@ -46,4 +46,8 @@ srun --jobid=214962 nvidia-smi
 
 
 # Adding backgrounds
-/lu/tetyda/home/jk426853/miniforge3/envs/uvcgan2/bin/python scripts/makeDataWithBackground.py /lu/tetyda/home/jk426853/uvcgan2/data/crystal160 /lu/tetyda/projects/GKW/PLB/background_images_573_files /lu/tetyda/home/jk426853/uvcgan2/data/crystal160withBackgrounds
+/lu/tetyda/home/jk426853/miniforge3/envs/uvcgan2/bin/python scripts/makeDataWithBackground.py /lu/tetyda/home/jk426853/uvcgan2/data/crystal160 /lu/tetyda/projects/GKW/PLB/background_images_573_files/573_files /lu/tetyda/home/jk426853/uvcgan2/data/crystal160withBackgrounds
+
+
+# Usefull
+for f in *0010_*; do mv "$f" "${f//0010_/}"; done

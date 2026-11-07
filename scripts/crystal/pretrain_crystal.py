@@ -73,7 +73,7 @@ args_dict = {
         'eta_min' : cmdargs.batch_size * 5e-8 / 512,
     },
     'transfer': {
-    'base_model': 'crystalSmall/model_m(autoencoder)_d(None)_g(vit-modnet)_Pretrainednoback',
+    'base_model': 'crystalSmall/pretrainOnlySynth',
     'transfer_map': {
         'encoder': 'encoder',
     },
@@ -85,7 +85,7 @@ args_dict = {
     'gradient_penalty' : None,
     'steps_per_epoch'  : 32 * 1024 // cmdargs.batch_size,
 # args
-    'label'      : 'PretrainedwithBackgrounds',
+    'label'      : 'PretrainedafterOnlySynth',
     'outdir'     : os.path.join(ROOT_OUTDIR, 'crystalSmall'),
     'log_level'  : 'DEBUG',
     'checkpoint' : 15,

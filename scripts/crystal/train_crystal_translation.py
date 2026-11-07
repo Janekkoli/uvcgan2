@@ -50,7 +50,7 @@ def get_transfer_preset(cmdargs):
 
     base_model = (
     'crystalSmall/'
-    'PretrainedwithBackgrounds'
+    'BertFirstonlysynththen60normal'
 )
     return {
         'base_model' : base_model,
@@ -72,13 +72,13 @@ args_dict = {
                 'dataset' : {
                     'name'   : 'image-domain-hierarchy',
                     'domain' : domain,
-                    'path'   : 'crystal160withBackgrounds',
+                    'path'   : 'crystal160',
                 },
                 'shape'           : (3, 160, 160),
-                'transform_train' : [
-                    { 'name' : 'random-rotation', 'degrees' : 10, },
-                    'random-flip-horizontal',
-                ],
+                # 'transform_train' : [
+                #     { 'name' : 'random-rotation', 'degrees' : 10, },
+                #     'random-flip-horizontal',
+                # ],
                 'transform_test' : None,
             } for domain in [ 'real', 'synth' ]
         ],
@@ -91,7 +91,7 @@ args_dict = {
         'model_args' : { 'shrink_output' : False, },
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : 5e-5,  # ZMIANA: Zmniejszono z 1e-4, aby osłabić zbyt silny dyskryminator
+            'lr'    : 1e-5,  # ZMIANA: Zmniejszono z 1e-4, aby osłabić zbyt silny dyskryminator
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
@@ -141,9 +141,9 @@ args_dict = {
         f':{cmdargs.lambda_cyc}:{cmdargs.lambda_gp}:{cmdargs.lr_gen}'
         f':bs{cmdargs.batch_size})'
     ),
-    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall'),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_chatFix'),
     'log_level'  : 'DEBUG',
-    'checkpoint' : 10,
+    'checkpoint' : 5,
 }
 
 
@@ -301,9 +301,9 @@ args_dict_v3 = {
     'label'  : (
         f'{cmdargs.gen}-{cmdargs.head}_v3_fast_lr2e4'
     ),
-    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_v3'),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_onlysynthbert'),
     'log_level'  : 'DEBUG',
     'checkpoint' : 5,
 }
 
-train(args_dict_v3)
+train(args_dict)
