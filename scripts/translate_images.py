@@ -21,7 +21,7 @@ def parse_cmdargs():
     parser = argparse.ArgumentParser(
         description = 'Save model predictions as images'
     )
-    add_standard_eval_parsers(parser)
+    add_standard_eval_parsers(parser, default_n_eval = 100)
     add_plot_extension_parser(parser)
 
     return parser.parse_args()

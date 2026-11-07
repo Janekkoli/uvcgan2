@@ -50,7 +50,7 @@ def get_transfer_preset(cmdargs):
 
     base_model = (
     'crystalSmall/'
-    'model_m(autoencoder)_d(None)_g(vit-modnet)_PretrainedwithBackgrounds'
+    'PretrainedwithBackgrounds'
 )
     return {
         'base_model' : base_model,
@@ -91,7 +91,7 @@ args_dict = {
         'model_args' : { 'shrink_output' : False, },
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : 1e-4,
+            'lr'    : 5e-5,  # ZMIANA: Zmniejszono z 1e-4, aby osłabić zbyt silny dyskryminator
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
@@ -104,7 +104,7 @@ args_dict = {
         **GEN_PRESETS[cmdargs.gen],
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : cmdargs.lr_gen,
+            'lr'    : cmdargs.lr_gen,  # Zalecana wartość w cmdargs to 1e-4 lub 5e-5
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
@@ -114,8 +114,8 @@ args_dict = {
     },
     'model' : 'uvcgan2',
     'model_args' : {
-        'lambda_a'        : cmdargs.lambda_cyc,
-        'lambda_b'        : cmdargs.lambda_cyc,
+        'lambda_a'        : 10.0,  # ZMIANA: Zwiększenie wagi cyklu A (jeśli cmdargs.lambda_cyc było < 10)
+        'lambda_b'        : 10.0,  # ZMIANA: Zwiększenie wagi cyklu B (jeśli cmdargs.lambda_cyc było < 10)
         'lambda_idt'      : 0.5,
         'avg_momentum'    : 0.9999,
         'head_queue_size' : 3,
@@ -132,11 +132,10 @@ args_dict = {
         'mix_type'  : 'real-fake',
         'reduction' : 'mean',
     },
-    'scheduler'       : None,
+    
     'loss'            : 'lsgan',
-    'steps_per_epoch' : 2000,
+    'steps_per_epoch' : 500,  # ZMIANA: Zmniejszono z 2000 na 500
     'transfer'        : get_transfer_preset(cmdargs),
-# args
     'label'  : (
         f'{cmdargs.gen}-{cmdargs.head}_({cmdargs.no_pretrain}'
         f':{cmdargs.lambda_cyc}:{cmdargs.lambda_gp}:{cmdargs.lr_gen}'
@@ -147,4 +146,164 @@ args_dict = {
     'checkpoint' : 10,
 }
 
-train(args_dict)
+
+args_dict_v2 = {
+    'batch_size' : cmdargs.batch_size,
+    'data' : {
+        'datasets' : [
+            {
+                'dataset' : {
+                    'name'   : 'image-domain-hierarchy',
+                    'domain' : domain,
+                    'path'   : 'crystal160withBackgrounds',
+                },
+                'shape'           : (3, 160, 160),
+                'transform_train' : [
+                    { 'name' : 'random-rotation', 'degrees' : 10, },
+                    'random-flip-horizontal',
+                ],
+                'transform_test' : None,
+            } for domain in [ 'real', 'synth' ]
+        ],
+        'merge_type' : 'unpaired',
+        'workers'    : 1,
+    },
+    'epochs'      : 50,  # Ustaw wybraną liczbę epok (np. 30-50)
+    'discriminator' : {
+        'model'      : 'basic',
+        'model_args' : { 'shrink_output' : False, },
+        'optimizer'  : {
+            'name'  : 'Adam',
+            'lr'    : 2.5e-5,
+            'betas' : (0.5, 0.99),
+        },
+        'weight_init' : {
+            'name'      : 'normal',
+            'init_gain' : 0.01,
+        },
+        'spectr_norm' : True,
+    },
+    'generator' : {
+        **GEN_PRESETS[cmdargs.gen],
+        'optimizer'  : {
+            'name'  : 'Adam',
+            'lr'    : 1e-4,
+            'betas' : (0.5, 0.99),
+        },
+        'weight_init' : {
+            'name'      : 'normal',
+            'init_gain' : 0.01,
+        },
+    },
+    'model' : 'uvcgan2',
+    'model_args' : {
+        'lambda_a'        : 15.0,
+        'lambda_b'        : 15.0,
+        'lambda_idt'      : 1.0,
+        'avg_momentum'    : 0.9999,
+        'head_queue_size' : 3,
+        'head_config'     : {
+            'name'            : BH_PRESETS[cmdargs.head],
+            'input_features'  : 512,
+            'output_features' : 1,
+            'activ'           : 'leakyrelu',
+        },
+    },
+    'gradient_penalty' : {
+        'center'    : 0,
+        'lambda_gp' : 10.0,
+        'mix_type'  : 'real-fake',
+        'reduction' : 'mean',
+    },
+    'loss'            : 'lsgan',
+    'steps_per_epoch' : 400,
+    'transfer'        : get_transfer_preset(cmdargs),
+    'label'  : (
+        f'{cmdargs.gen}-{cmdargs.head}_v2_ttur_lam15'
+    ),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_v2'),
+    'log_level'  : 'DEBUG',
+    'checkpoint' : 5,  # Zapisywanie checkpointów co 5 epok dla szybszej weryfikacji
+}
+
+
+args_dict_v3 = {
+    'batch_size' : cmdargs.batch_size,
+    'data' : {
+        'datasets' : [
+            {
+                'dataset' : {
+                    'name'   : 'image-domain-hierarchy',
+                    'domain' : domain,
+                    'path'   : 'crystal160withBackgrounds',
+                },
+                'shape'           : (3, 160, 160),
+                'transform_train' : [
+                    { 'name' : 'random-rotation', 'degrees' : 10, },
+                    'random-flip-horizontal',
+                ],
+                'transform_test' : None,
+            } for domain in [ 'real', 'synth' ]
+        ],
+        'merge_type' : 'unpaired',
+        'workers'    : 1,
+    },
+    'epochs'      : 50,
+    'discriminator' : {
+        'model'      : 'basic',
+        'model_args' : { 'shrink_output' : False, },
+        'optimizer'  : {
+            'name'  : 'Adam',
+            'lr'    : 5e-5,   # Osłabiony dyskryminator
+            'betas' : (0.5, 0.99),
+        },
+        'weight_init' : {
+            'name'      : 'normal',
+            'init_gain' : 0.02,
+        },
+        'spectr_norm' : True,
+    },
+    'generator' : {
+        **GEN_PRESETS[cmdargs.gen],
+        'optimizer'  : {
+            'name'  : 'Adam',
+            'lr'    : 2e-4,   # Agresywniejszy generator (4x szybszy od dyskryminatora)
+            'betas' : (0.5, 0.99),
+        },
+        'weight_init' : {
+            'name'      : 'normal',
+            'init_gain' : 0.02,
+        },
+    },
+    'model' : 'uvcgan2',
+    'model_args' : {
+        'lambda_a'        : 10.0,
+        'lambda_b'        : 10.0,
+        'lambda_idt'      : 0.5,
+        'avg_momentum'    : 0.9999,
+        'head_queue_size' : 3,
+        'head_config'     : {
+            'name'            : BH_PRESETS[cmdargs.head],
+            'input_features'  : 512,
+            'output_features' : 1,
+            'activ'           : 'leakyrelu',
+        },
+    },
+    'gradient_penalty' : {
+        'center'    : 0,
+        'lambda_gp' : cmdargs.lambda_gp,
+        'mix_type'  : 'real-fake',
+        'reduction' : 'mean',
+    },
+    'loss'            : 'lsgan',
+    'steps_per_epoch' : 300,  # Tylko 300 kroków na epokę – bardzo szybki podgląd wyników
+    'transfer'        : get_transfer_preset(cmdargs),
+    'label'  : (
+        f'{cmdargs.gen}-{cmdargs.head}_v3_fast_lr2e4'
+    ),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_v3'),
+    'log_level'  : 'DEBUG',
+    'checkpoint' : 5,
+}
+
+train(args_dict_v3)
