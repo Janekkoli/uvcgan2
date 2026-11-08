@@ -4,7 +4,7 @@ tmux attach -t train
 # Ewaluacja
 python3 scripts/translate_images.py outdir/crystalSmall/model100epochs --split val
 
-/lu/tetyda/home/jk426853/miniforge3/envs/uvcgan2/bin/python scripts/translate_images.py /lu/tetyda/home/jk426853/uvcgan2/outdir/crystalSmall/crystalSmall_chatFix/model5 --split val
+/lu/tetyda/home/jk426853/miniforge3/envs/uvcgan2/bin/python scripts/translate_images.py /lu/tetyda/home/jk426853/uvcgan2/outdir/crystalSmall/crystalSmall_chatFixNoIdentityFixv2/model5 --split val
 # Downsize
 python3 ./scripts/downsize_right.py -s 64 64 -i lanczos /home/jan/uvcgan2/uvcgan2/data/573_files /home/jan/uvcgan2/uvcgan2/data/backgroundSmall
 # Pretrain

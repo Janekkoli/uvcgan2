@@ -75,15 +75,15 @@ args_dict = {
                     'path'   : 'crystal160',
                 },
                 'shape'           : (3, 160, 160),
-                # 'transform_train' : [
-                #     { 'name' : 'random-rotation', 'degrees' : 10, },
-                #     'random-flip-horizontal',
-                # ],
+                'transform_train' : [
+                    { 'name' : 'random-rotation', 'degrees' : 10, },
+                    'random-flip-horizontal',
+                ],
                 'transform_test' : None,
             } for domain in [ 'real', 'synth' ]
         ],
         'merge_type' : 'unpaired',
-        'workers'    : 1,
+        'workers'    : 4,
     },
     'epochs'      : 500,
     'discriminator' : {
@@ -104,7 +104,7 @@ args_dict = {
         **GEN_PRESETS[cmdargs.gen],
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : cmdargs.lr_gen,  # Zalecana wartość w cmdargs to 1e-4 lub 5e-5
+            'lr'    :  5e-5, #cmdargs.lr_gen,  # Zalecana wartość w cmdargs to 1e-4 lub 5e-5
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
@@ -116,7 +116,7 @@ args_dict = {
     'model_args' : {
         'lambda_a'        : 10.0,  # ZMIANA: Zwiększenie wagi cyklu A (jeśli cmdargs.lambda_cyc było < 10)
         'lambda_b'        : 10.0,  # ZMIANA: Zwiększenie wagi cyklu B (jeśli cmdargs.lambda_cyc było < 10)
-        'lambda_idt'      : 0.5,
+        'lambda_idt'      : 0.05,
         'avg_momentum'    : 0.9999,
         'head_queue_size' : 3,
         'head_config'     : {
@@ -128,7 +128,7 @@ args_dict = {
     },
     'gradient_penalty' : {
         'center'    : 0,
-        'lambda_gp' : cmdargs.lambda_gp,
+        'lambda_gp' : 10,
         'mix_type'  : 'real-fake',
         'reduction' : 'mean',
     },
@@ -141,11 +141,10 @@ args_dict = {
         f':{cmdargs.lambda_cyc}:{cmdargs.lambda_gp}:{cmdargs.lr_gen}'
         f':bs{cmdargs.batch_size})'
     ),
-    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_chatFix'),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_chatFixNoIdentityFix'),
     'log_level'  : 'DEBUG',
     'checkpoint' : 5,
 }
-
 
 args_dict_v2 = {
     'batch_size' : cmdargs.batch_size,
@@ -155,7 +154,7 @@ args_dict_v2 = {
                 'dataset' : {
                     'name'   : 'image-domain-hierarchy',
                     'domain' : domain,
-                    'path'   : 'crystal160withBackgrounds',
+                    'path'   : 'crystal160',
                 },
                 'shape'           : (3, 160, 160),
                 'transform_train' : [
@@ -166,20 +165,20 @@ args_dict_v2 = {
             } for domain in [ 'real', 'synth' ]
         ],
         'merge_type' : 'unpaired',
-        'workers'    : 1,
+        'workers'    : 4,
     },
-    'epochs'      : 50,  # Ustaw wybraną liczbę epok (np. 30-50)
+    'epochs'      : 500,
     'discriminator' : {
         'model'      : 'basic',
         'model_args' : { 'shrink_output' : False, },
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : 2.5e-5,
+            'lr'    : 2e-5,  # ZMIANA: Zmniejszono z 1e-4, aby osłabić zbyt silny dyskryminator
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
             'name'      : 'normal',
-            'init_gain' : 0.01,
+            'init_gain' : 0.02,
         },
         'spectr_norm' : True,
     },
@@ -187,19 +186,19 @@ args_dict_v2 = {
         **GEN_PRESETS[cmdargs.gen],
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : 1e-4,
+            'lr'    :  5e-5, #cmdargs.lr_gen,  # Zalecana wartość w cmdargs to 1e-4 lub 5e-5
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
             'name'      : 'normal',
-            'init_gain' : 0.01,
+            'init_gain' : 0.02,
         },
     },
     'model' : 'uvcgan2',
     'model_args' : {
-        'lambda_a'        : 15.0,
-        'lambda_b'        : 15.0,
-        'lambda_idt'      : 1.0,
+        'lambda_a'        : 10.0,  # ZMIANA: Zwiększenie wagi cyklu A (jeśli cmdargs.lambda_cyc było < 10)
+        'lambda_b'        : 10.0,  # ZMIANA: Zwiększenie wagi cyklu B (jeśli cmdargs.lambda_cyc było < 10)
+        'lambda_idt'      : 0,
         'avg_momentum'    : 0.9999,
         'head_queue_size' : 3,
         'head_config'     : {
@@ -211,20 +210,24 @@ args_dict_v2 = {
     },
     'gradient_penalty' : {
         'center'    : 0,
-        'lambda_gp' : 10.0,
+        'lambda_gp' : 10,
         'mix_type'  : 'real-fake',
         'reduction' : 'mean',
     },
+    
     'loss'            : 'lsgan',
-    'steps_per_epoch' : 400,
+    'steps_per_epoch' : 500,  # ZMIANA: Zmniejszono z 2000 na 500
     'transfer'        : get_transfer_preset(cmdargs),
     'label'  : (
-        f'{cmdargs.gen}-{cmdargs.head}_v2_ttur_lam15'
+        f'{cmdargs.gen}-{cmdargs.head}_({cmdargs.no_pretrain}'
+        f':{cmdargs.lambda_cyc}:{cmdargs.lambda_gp}:{cmdargs.lr_gen}'
+        f':bs{cmdargs.batch_size})'
     ),
-    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_v2'),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_chatFixNoIdentityFixv2'),
     'log_level'  : 'DEBUG',
-    'checkpoint' : 5,  # Zapisywanie checkpointów co 5 epok dla szybszej weryfikacji
+    'checkpoint' : 5,
 }
+
 
 
 args_dict_v3 = {
@@ -235,7 +238,7 @@ args_dict_v3 = {
                 'dataset' : {
                     'name'   : 'image-domain-hierarchy',
                     'domain' : domain,
-                    'path'   : 'crystal160withBackgrounds',
+                    'path'   : 'crystal160',
                 },
                 'shape'           : (3, 160, 160),
                 'transform_train' : [
@@ -246,15 +249,15 @@ args_dict_v3 = {
             } for domain in [ 'real', 'synth' ]
         ],
         'merge_type' : 'unpaired',
-        'workers'    : 1,
+        'workers'    : 4,
     },
-    'epochs'      : 50,
+    'epochs'      : 500,
     'discriminator' : {
         'model'      : 'basic',
         'model_args' : { 'shrink_output' : False, },
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : 5e-5,   # Osłabiony dyskryminator
+            'lr'    : 2e-5,  # ZMIANA: Zmniejszono z 1e-4, aby osłabić zbyt silny dyskryminator
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
@@ -267,7 +270,7 @@ args_dict_v3 = {
         **GEN_PRESETS[cmdargs.gen],
         'optimizer'  : {
             'name'  : 'Adam',
-            'lr'    : 2e-4,   # Agresywniejszy generator (4x szybszy od dyskryminatora)
+            'lr'    :  5e-5, #cmdargs.lr_gen,  # Zalecana wartość w cmdargs to 1e-4 lub 5e-5
             'betas' : (0.5, 0.99),
         },
         'weight_init' : {
@@ -277,9 +280,9 @@ args_dict_v3 = {
     },
     'model' : 'uvcgan2',
     'model_args' : {
-        'lambda_a'        : 10.0,
-        'lambda_b'        : 10.0,
-        'lambda_idt'      : 0.5,
+        'lambda_a'        : 2.0,  # ZMIANA: Zwiększenie wagi cyklu A (jeśli cmdargs.lambda_cyc było < 10)
+        'lambda_b'        : 2.0,  # ZMIANA: Zwiększenie wagi cyklu B (jeśli cmdargs.lambda_cyc było < 10)
+        'lambda_idt'      : 0.05,
         'avg_momentum'    : 0.9999,
         'head_queue_size' : 3,
         'head_config'     : {
@@ -291,19 +294,22 @@ args_dict_v3 = {
     },
     'gradient_penalty' : {
         'center'    : 0,
-        'lambda_gp' : cmdargs.lambda_gp,
+        'lambda_gp' : 10,
         'mix_type'  : 'real-fake',
         'reduction' : 'mean',
     },
+    
     'loss'            : 'lsgan',
-    'steps_per_epoch' : 300,  # Tylko 300 kroków na epokę – bardzo szybki podgląd wyników
+    'steps_per_epoch' : 500,  # ZMIANA: Zmniejszono z 2000 na 500
     'transfer'        : get_transfer_preset(cmdargs),
     'label'  : (
-        f'{cmdargs.gen}-{cmdargs.head}_v3_fast_lr2e4'
+        f'{cmdargs.gen}-{cmdargs.head}_({cmdargs.no_pretrain}'
+        f':{cmdargs.lambda_cyc}:{cmdargs.lambda_gp}:{cmdargs.lr_gen}'
+        f':bs{cmdargs.batch_size})'
     ),
-    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_onlysynthbert'),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_chatFixNoIdentityFixv3'),
     'log_level'  : 'DEBUG',
     'checkpoint' : 5,
 }
 
-train(args_dict)
+train(args_dict_v3)
