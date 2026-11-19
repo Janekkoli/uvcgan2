@@ -238,7 +238,7 @@ args_dict_v3 = {
                 'dataset' : {
                     'name'   : 'image-domain-hierarchy',
                     'domain' : domain,
-                    'path'   : 'crystal160',
+                    'path'   : 'crystal160withBackgrounds',
                 },
                 'shape'           : (3, 160, 160),
                 'transform_train' : [
@@ -307,7 +307,7 @@ args_dict_v3 = {
         f':{cmdargs.lambda_cyc}:{cmdargs.lambda_gp}:{cmdargs.lr_gen}'
         f':bs{cmdargs.batch_size})'
     ),
-    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_chatFixNoIdentityFixv3'),
+    'outdir' : os.path.join(ROOT_OUTDIR, 'crystalSmall', 'crystalSmall_chatFixNoIdentityFixv3_45hBackgrounds'),
     'log_level'  : 'DEBUG',
     'checkpoint' : 5,
 }

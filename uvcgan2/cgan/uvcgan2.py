@@ -148,6 +148,7 @@ class UVCGAN2(ModelBase):
         lambda_idt      = 0.5,
         lambda_consist  = 0,
         head_queue_size = 3,
+        discriminator_steps = 1,
         avg_momentum    = None,
         consistency     = None,
     ):
@@ -157,6 +158,9 @@ class UVCGAN2(ModelBase):
         self.lambda_b       = lambda_b
         self.lambda_idt     = lambda_idt
         self.lambda_consist = lambda_consist
+        if discriminator_steps < 1:
+            raise ValueError('discriminator_steps must be at least 1')
+        self.discriminator_steps = discriminator_steps
         self.avg_momentum   = avg_momentum
         self.head_config    = head_config or {}
         self.consist_model  = None
@@ -446,8 +450,8 @@ class UVCGAN2(ModelBase):
 
     def optimization_step(self):
         self.optimization_step_gen()
-        self.optimization_step_disc()
+        for _ in range(self.discriminator_steps):
+            self.optimization_step_disc()
 
         if self.avg_momentum is not None:
             self._accumulate_averages()
-
